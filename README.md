@@ -81,8 +81,8 @@ The yaml file contains:
 - The Json-schema definition of the entity; for the notifications a standard event
 header will be added.
 - A json object describing the finite state machine:
--- Permitted state transitions.
--- Timestamp fields to be updated on state-transitions
+  - Permitted state transitions.
+  - Timestamp fields to be updated on state-transitions
 
 ## On security
 
