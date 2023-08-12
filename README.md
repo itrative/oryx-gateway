@@ -21,6 +21,8 @@ The token is installed on kubernetes using:
 
 `kubectl create secret docker-registry gateway-registry --docker-username=oryxgateway2 --docker-password=$SECRET --namespace components`
 
+`kubectl create secret docker-registry gateway-registry --docker-username=oryxgateway2 --docker-password=$SECRET --namespace canvas`
+
 ## replacing the component controller
 
 Replace the canvas component-controller to add support for automatically wiring notification to the TMFC019
@@ -37,7 +39,7 @@ In this file in the spec part, add the following group:
 
 and replace the container image for the component-controller with:
 
-`cloud.canister.io:5000/oryxgateway/component-controller:latest`
+`oryxgateway/component-controller:latest`
 
 
 ## installing Eventhub gateway
@@ -53,6 +55,34 @@ To install the Gateway with default values (multi-broker kafka):
 To install the gateway in a single-node mode please use the following values:
 
 `https://github.com/oryx-gateway/charts/blob/master/gateway-extras/values-minikube.yaml`
+
+## installing LeanRepo
+Deploy lean-repo configured for a specific OpenAPI. This will install a microservice
+with a generic TMF630 implementation for any OpenAPI compliant endpoint. The endpoint
+will emit Notifications on the kafka topics when POST, PATCH or DELETE operation are
+performed. When GET operation is performed it will query the eventually consistent
+queryStore in MongoDB.
+e.g.
+Leanrepo (TMF629 Customer):
+
+`helm upgrade --install --values ../helm/leanrepo/values.yaml -
+-values ../helm/leanrepo/values-local.yaml --values
+../helm/leanrepo/values-tmf629-customer.yaml --namespace
+components customer ../helm/leanrepo`
+
+Leanrepo (TMF637 Product):
+
+`helm upgrade --install --values ../helm/leanrepo/values.yaml -
+-values ../helm/leanrepo/values-local.yaml --values
+../helm/leanrepo/values-tmf637-product.yaml --namespace
+components product ../helm/leanrepo`
+
+The yaml file contains:
+- The Json-schema definition of the entity; for the notifications a standard event
+header will be added.
+- A json object describing the finite state machine:
+-- Permitted state transitions.
+-- Timestamp fields to be updated on state-transitions
 
 ## On security
 
